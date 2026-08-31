@@ -1,14 +1,18 @@
-# dist_cache E2E tests (`test/dcache_e2e/`)
+# distributed_cache E2E tests (`test/dcache_e2e/`)
 
-Read-path E2E tests focused on the `dist_cache` component. These tests assert
-`dist_cache` *behaviour* — L2 miss populates, L2 hit serves the same bytes
+Read-path E2E tests focused on the `distributed_cache` component. These tests assert
+`distributed_cache` *behaviour* — L2 miss populates, L2 hit serves the same bytes
 we wrote, and cache-server metrics move in the expected direction.
 
 ## Design
 
-* **The mount is read-only.** The reference pod config sets `read-only: true`,
-  and every test verifies the cloned pod reports `ro` in `/proc/mounts` before
-  reading. Payloads are uploaded directly to Azure Storage through the Azure SDK.
+* **The mount is read-only.** The reference pod is deployed with the standard
+  YAML configuration. CLI-flag coverage is provided by `cli_flags_test.go`,
+  which clones the reference Deployment into a private test pod that invokes
+  `blobfuse2 mount` directly with `--distributed-cache` and its tuning flags.
+  Every test verifies the cloned pod reports `ro` in `/proc/mounts`
+  before reading. Payloads are uploaded directly to Azure Storage through the
+  Azure SDK.
 * **Each test owns an isolated Deployment.** A test clones the reference
   blobfuse2 Deployment with a unique name and selector, then deletes it in
   cleanup. Tests that need to clear local `block_cache` restart their clone.
