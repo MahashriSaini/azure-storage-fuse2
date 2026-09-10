@@ -9,7 +9,8 @@ we wrote, and cache-server metrics move in the expected direction.
 * **The mount is read-only.** The reference pod is deployed with the standard
   YAML configuration. CLI-flag coverage is provided by `cli_flags_test.go`,
   which clones the reference Deployment into a private test pod that invokes
-  `blobfuse2 mount` directly with `--distributed-cache` and its tuning flags.
+  `blobfuse2 mount` directly with `--distributed-cache-discovery-endpoint`
+  (which enables distributed cache) and its tuning flags.
   Every test verifies the cloned pod reports `ro` in `/proc/mounts`
   before reading. Payloads are uploaded directly to Azure Storage through the
   Azure SDK.
@@ -73,6 +74,14 @@ export BLOBFUSE2_IMAGE=<registry>/azure-blobfuse2:<tag>
 # Run the read-path test.
 go test -v -tags=fuse3 ./test/dcache_e2e/... \
   -run '^TestReadPath_L2MissPopulatesAndHits$' -args \
+  -pod-namespace=blobfuse2-dist-cache \
+  -pod-deployment=blobfuse2-dist-cache \
+  -pod-mount-path=/mnt/blobfuse_mnt \
+  -kubectl-bin=kubectl
+
+# Run the equivalent no-YAML CLI-flags test.
+go test -v -tags=fuse3 ./test/dcache_e2e/... \
+  -run '^TestCLIFlags_ReadPath_NoYAML$' -args \
   -pod-namespace=blobfuse2-dist-cache \
   -pod-deployment=blobfuse2-dist-cache \
   -pod-mount-path=/mnt/blobfuse_mnt \

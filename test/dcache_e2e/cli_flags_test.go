@@ -46,10 +46,10 @@ import "testing"
 // If any of the CLI flag bindings introduced in PR #2316 regresses -- the
 // flag isn't registered, isn't bound to viper, isn't consumed by
 // distributed_cache.Configure, or the pipeline isn't auto-populated when
-// --distributed-cache is set without a components: list -- either the pod
-// never becomes Ready, the L2 miss produces zero Upload/Success deltas, or
-// the L2 hit returns zero Download/Success deltas. Any of those is a fatal
-// error in runReadPathL2MissHitScenario.
+// the discovery endpoint is set without a components: list -- either the pod
+// never becomes Ready, the L2 miss produces zero Upload/Success deltas, or the
+// L2 hit returns zero Download/Success deltas. Any of those is a fatal error in
+// runReadPathL2MissHitScenario.
 //
 // Passing this test is a strong end-to-end statement: distributed_cache can
 // be fully driven from the CLI surface, and the CLI surface produces the

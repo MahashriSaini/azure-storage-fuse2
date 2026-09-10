@@ -48,8 +48,8 @@ import (
 // Deployment, drop the config-file volume+arg entirely, and launch blobfuse2
 // with:
 //
-//   * `--distributed-cache` + `--distributed-cache-*` flags for the L2 wiring
-//    and
+//   * `--distributed-cache-discovery-endpoint` to enable L2 plus the remaining
+//     `--distributed-cache-*` tuning flags, and
 //   * a small set of first-class CLI flags for the non-distcache bits the
 //     reference YAML had (`--foreground`, `--read-only`, `--allow-other`,
 //     `--ignore-open-flags`, `--log-level`, `--log-file-path`,
@@ -63,7 +63,7 @@ import (
 // all, exercising the cobra -> viper -> distributed_cache wiring end-to-end.
 // cmd/mount.go auto-populates the pipeline
 // ([libfuse, block_cache, distributed_cache, attr_cache, azstorage]) when
-// --distributed-cache is set without a components: list.
+// a distributed-cache discovery method is set without a components: list.
 
 // cliFlagSet captures the exact CLI values one CLI-mode pod is launched with.
 // Defaults mirror the reference YAML Secret so parity with the YAML path can
@@ -100,19 +100,17 @@ func defaultCLIFlags() cliFlagSet {
 // libfuse/logging knobs, container name) or an env var (azstorage creds,
 // injected by newCLIPodMounter's container env: block).
 func (f cliFlagSet) cliArgs() string {
-	return fmt.Sprintf(`/sbin/rsyslogd
-exec blobfuse2 mount /mnt/blobfuse_mnt \
+	return fmt.Sprintf(`exec blobfuse2 mount /mnt/blobfuse_mnt \
   --foreground=true --read-only --allow-other --ignore-open-flags \
   --log-level=LOG_DEBUG \
   --log-file-path=%s \
   --container-name=%q \
-  --distributed-cache \
   --distributed-cache-discovery-endpoint=%q \
   --distributed-cache-block-size=%d \
-  --distributed-cache-memory=%d \
+  --distributed-cache-node-memory=%d \
   --distributed-cache-prefetch=%d \
   --distributed-cache-parallelism=%d \
-  --distributed-cache-ttl=%d \
+  --distributed-cache-node-ttl=%d \
   -o allow_other
 `,
 		blobfuseDiagnosticLogPath,

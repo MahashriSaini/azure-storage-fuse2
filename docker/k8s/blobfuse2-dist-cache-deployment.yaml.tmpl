@@ -98,7 +98,6 @@ spec:
             - -c
           args:
             - |
-              /sbin/rsyslogd
               exec blobfuse2 mount /mnt/blobfuse_mnt \
                 --config-file=/usr/share/blobfuse2/config.yaml \
                 --ignore-open-flags --foreground=true
